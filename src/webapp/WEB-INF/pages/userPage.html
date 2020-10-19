@@ -20,5 +20,9 @@
         <td th:text="${user.email}"></td>
     </tr>
 </table>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Sign Out"/>
+</form>
+<a href="<c:url value="/logout" />">Logout</a>
 </body>
 </html>

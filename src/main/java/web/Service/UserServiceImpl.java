@@ -10,6 +10,8 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,12 +23,10 @@ import web.Model.Role;
 import web.Model.User;
 
 
-@Service
+@Service("userServiceImpl")
 @Transactional
+@ComponentScan(basePackages = "web")
 public class UserServiceImpl implements UserDetailsService {
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Autowired
     UserDao userDao;

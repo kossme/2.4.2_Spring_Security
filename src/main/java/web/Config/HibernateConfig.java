@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories("web.Service")
+@EnableJpaRepositories(basePackages = "web.Service")
 @PropertySource(value = {"classpath:db.properties"})
 public class HibernateConfig {
 

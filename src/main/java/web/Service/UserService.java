@@ -1,3 +1,4 @@
+/*
 package web.Service;
 
 import web.Model.User;
@@ -15,6 +16,5 @@ public interface UserService {
     User findUserById(long id);
 
     boolean updateUser(String firstName, String lastName, String email, long id);
-
-
 }
+*/
