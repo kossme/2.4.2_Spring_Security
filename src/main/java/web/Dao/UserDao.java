@@ -8,22 +8,8 @@ import web.Model.User;
 
 import java.util.List;
 
-@Repository
-public interface UserDao extends JpaRepository<User,Long> {
+public interface UserDao {
 
-    User findByUsername(String username);
-
-    List<User> findAll();
-
-    void removeUserById(Long id);
-
-    @Query("update User c set c.firstName = :firstName, c.lastName = :lastname, c.email = :email WHERE c.id = :userId")
-    void setUserInfoById(@Param("firstName") String firstName, @Param("lastName") String lastName, @Param("email") String email, @Param("userId") long userId);
-
-
-
-
-/*
     void add(User user);
 
     List<User> listUsers();
@@ -39,6 +25,5 @@ public interface UserDao extends JpaRepository<User,Long> {
     void updateUser(User user);
 
     User findByUsername(String username);
-*/
 
-    }
+}

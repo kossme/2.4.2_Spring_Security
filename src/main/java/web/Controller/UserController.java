@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.web.JsonPath;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+import web.Dao.RoleDao;
 import web.Model.User;
-import web.Service.UserServiceImpl;
+import web.Service.RoleService;
+import web.Service.UserService;
 import web.Validator.UserValidator;
 
 
@@ -19,14 +23,17 @@ import web.Validator.UserValidator;
 public class UserController {
 
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @Autowired
     private UserValidator userValidator;
 
+    @Autowired
+    private RoleService roleService;
+
     public UserController() {
     }
-
+/*
     @GetMapping(value = "/")
     public String firstPage(ModelMap model) {
         List<User> usersList = new ArrayList<>();
@@ -54,7 +61,7 @@ public class UserController {
 
     @GetMapping("/addNewUserForm")
     public String showSignUpForm(Model model) {
-        model.addAttribute("user", new User(null, null, null));
+        model.addAttribute("user", new User());
         return "new";
     }
 
@@ -87,7 +94,7 @@ public class UserController {
             user.setFirstName(firstName);
             user.setLastName(lasttName);
             user.setEmail(email);
-            userService.updateUser(user.getFirstName(), user.getLastName(), user.getEmail(), user.getId());
+            userService.updateUser(user);
         }
         return "redirect:/";
     }
@@ -97,38 +104,72 @@ public class UserController {
         model.addAttribute("user", userService.findUserById(id));
         return "userPage";
     }
-
-    @GetMapping("/registration")
-    public String registration(Model model) {
-        model.addAttribute("userForm", new User());
-        return "registration";
+*/
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new User());
+        return "register";
     }
 
-    @PostMapping("/registration")
-    public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model) {
+    @PostMapping("/register")
+    public String registration(@ModelAttribute("user") User userForm, BindingResult bindingResult, Model model) {
         userValidator.validate(userForm, bindingResult);
         if (bindingResult.hasErrors()) {
-            return "registration";
+            return "/register";
         }
         userService.add(userForm);
+        roleService.checkIfRoleExistOraddNewRole("ROLE_USER");
         //securityService.autoLogin(userForm.getUsername(), userForm.getConfirmPassword());
         return "redirect:/";
     }
 
-    @GetMapping("/login")
+    @RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
+    public String welcomePage(Model model) {
+        model.addAttribute("title", "Welcome");
+        model.addAttribute("message", "This is home page!");
+        return "home";
+    }
+
+    // Login form
+    @GetMapping("/login.html")
+    public String login() {
+        return "login.html";
+    }
+
+    @GetMapping(value = "/logoutSuccessful")
+    public String logoutSuccessfulPage(Model model) {
+        model.addAttribute("title", "Logout");
+        return "logoutSuccessfulPage";
+    }
+
+    @GetMapping(value = "/userPage")
+    public String showUserPage(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();//get logged in username
+        User user = (User) userService.loadUserByUsername(name);
+        model.addAttribute("user", user);
+        return "userPage";
+    }
+
+/*
+    // Login form with error
+    @RequestMapping("/login-error.html")
+    public String loginError(Model model) {
+        model.addAttribute("loginError", true);
+        return "login.html";
+    }
+
+   @GetMapping("/login")
     public String login(Model model, String error, String logout) {
         if (error != null) {
             model.addAttribute("error", "Username or password is incorrect.");
         }
-
         if (logout != null) {
             model.addAttribute("message", "Logged out successfully.");
         }
-
         return "login";
-    }
 
-/*    @RequestMapping(value="/logout", method = RequestMethod.GET)
+   @RequestMapping(value="/logout", method = RequestMethod.GET)
     public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null){
