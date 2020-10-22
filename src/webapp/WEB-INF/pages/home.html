@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:utext="${title}"></title>
+</head>
+
+<body>
+
+<!-- Include _menu.html -->
+<th:block th:include="/_menu">Menu</th:block>
+
+<h2> <span th:utext="${message}"></span></h2>
+<h3><span th:if="${#request.userPrincipal == null}" th:utext="${youAraNotLoggedIn}"></span></h3>
+<h5><span th:if="${#request.userPrincipal != null}" th:utext="${LoggedInMessage}"></span></h5>
+<a th:if="${#request.userPrincipal == null}" th:href="@{/login.html}">Login</a>
+<br>
+<a th:if="${#request.userPrincipal == null}" th:href="@{/register.html}">Registration</a>
+</body>
+</html>

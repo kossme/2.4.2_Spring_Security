@@ -127,6 +127,11 @@ public class UserController {
     public String welcomePage(Model model) {
         model.addAttribute("title", "Welcome");
         model.addAttribute("message", "This is home page!");
+        String notloggedInMessage = "You are not logged in. Please log in or register to view information";
+        model.addAttribute("youAraNotLoggedIn", notloggedInMessage);
+        String loggedInMessage = "You are logged in";
+        model.addAttribute("LoggedInMessage", loggedInMessage);
+
         return "home";
     }
 
