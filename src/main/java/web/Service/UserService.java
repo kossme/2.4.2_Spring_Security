@@ -48,9 +48,6 @@ public class UserService implements UserDetailsService {
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userDao.findByUsername(username);
-/*        if(user==null) {
-            throw new UsernameNotFoundException("User not found");
-        }*/
         return user;
     }
 

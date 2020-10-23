@@ -5,7 +5,7 @@
     <title>Delete user?</title>
 </head>
 <body>
-<form th:method = get th:action="@{'/delete/' + ${user.id}}">
+<form th:method = get th:action="@{'/admin/delete/' + ${user.id}}">
 
 <h1> Are you sure you want to delete user <h2 th:text="${user.firstName}"></h2> </h1>
 
@@ -16,7 +16,7 @@
 </form>
 
 <h3>
-    <a th:href="@{/}">Back</a>
+    <a th:href="@{/admin/userList}">Back</a>
 </h3>
 
 </body>

@@ -21,8 +21,6 @@ public class RoleDaoImpl implements RoleDao{
         try {
             Role role = (Role) entityManager.createQuery(query).getSingleResult();
         } catch (NoResultException e) {
-/*            query = "INSERT INTO ROLES (NAME) VALUES ('" + roleName + "') ";
-            entityManager.createNativeQuery(query).executeUpdate();*/
             entityManager.persist(new Role(roleName));
         }
     }

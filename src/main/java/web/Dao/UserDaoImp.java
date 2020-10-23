@@ -47,6 +47,8 @@ public class UserDaoImp implements UserDao  {
         String sqlQuery = "update users set firstName= '" +  user.getFirstName() +
                 "', lastName= '" + user.getLastName() +
                 "',  email= '" + user.getEmail() +
+                "',  username= '" + user.getUsername() +
+                "',  password= '" + user.getPassword() +
                 "' where id=" +user.getId();
         entityManager.createNativeQuery(sqlQuery).executeUpdate();
     }

@@ -33,78 +33,7 @@ public class UserController {
 
     public UserController() {
     }
-/*
-    @GetMapping(value = "/")
-    public String firstPage(ModelMap model) {
-        List<User> usersList = new ArrayList<>();
-        //userService.add(new User("User5", "Lastname5", "user5@mail.ru"));
-        usersList = userService.listUsers();
-        model.addAttribute("usersList", usersList);
-        System.out.println(usersList);
-        return "index";
-    }
 
-
-    @GetMapping("/deleteConfirm/{id}")
-    public String deleteConfirm(@PathVariable("id") Long id, Model model) {
-        User user = userService.findUserById(id);
-        model.addAttribute("user", userService.findUserById(id));
-        return "deleteConfirm";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteUserById(@PathVariable(value = "id", required = true) long id, Model model) {
-        userService.removeUser(id);
-        return "redirect:/";
-    }
-//"redirect:/index"
-
-    @GetMapping("/addNewUserForm")
-    public String showSignUpForm(Model model) {
-        model.addAttribute("user", new User());
-        return "new";
-    }
-
-    @PostMapping()
-    public String create(@RequestParam("firstName") String firstName,
-                         @RequestParam("lastName") String lasttName,
-                         @RequestParam("email") String email, Model model) {
-        User user = new User();
-        user.setFirstName(firstName);
-        user.setLastName(lasttName);
-        user.setEmail(email);
-        userService.add(user);
-        return "redirect:/";
-    }
-
-
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("user", userService.findUserById(id));
-        return "updateForm";
-    }
-
-    @PostMapping("/update/{id}")
-    public String update(@PathVariable(value = "id", required = true) long id,
-                         @RequestParam("firstName") String firstName,
-                         @RequestParam("lastName") String lasttName,
-                         @RequestParam("email") String email, Model model) {
-        if (firstName != null && lasttName != null && email != null) {
-            User user = userService.findUserById(id);
-            user.setFirstName(firstName);
-            user.setLastName(lasttName);
-            user.setEmail(email);
-            userService.updateUser(user);
-        }
-        return "redirect:/";
-    }
-
-    @GetMapping("/user/{id}")
-    public String showUserPage(@PathVariable(value = "id", required = true) long id, Model model) {
-        model.addAttribute("user", userService.findUserById(id));
-        return "userPage";
-    }
-*/
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
@@ -123,7 +52,7 @@ public class UserController {
         return "redirect:/";
     }
 
-    @RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
+    @GetMapping(value = { "/", "/home" })
     public String welcomePage(Model model) {
         model.addAttribute("title", "Welcome");
         model.addAttribute("message", "This is home page!");
@@ -131,7 +60,6 @@ public class UserController {
         model.addAttribute("youAraNotLoggedIn", notloggedInMessage);
         String loggedInMessage = "You are logged in";
         model.addAttribute("LoggedInMessage", loggedInMessage);
-
         return "home";
     }
 
@@ -156,33 +84,10 @@ public class UserController {
         return "userPage";
     }
 
-/*
-    // Login form with error
-    @RequestMapping("/login-error.html")
-    public String loginError(Model model) {
-        model.addAttribute("loginError", true);
-        return "login.html";
+    @GetMapping(value = "/403")
+    public String accessDenied(Model model) {
+        return "403";
     }
-
-   @GetMapping("/login")
-    public String login(Model model, String error, String logout) {
-        if (error != null) {
-            model.addAttribute("error", "Username or password is incorrect.");
-        }
-        if (logout != null) {
-            model.addAttribute("message", "Logged out successfully.");
-        }
-        return "login";
-
-   @RequestMapping(value="/logout", method = RequestMethod.GET)
-    public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-        }
-        return "redirect:/login?logout=true";
-    }*/
-
 }
 
 

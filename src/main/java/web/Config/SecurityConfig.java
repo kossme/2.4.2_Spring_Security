@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import web.Config.handler.LoginSuccessHandler;
 import web.Service.UserService;
@@ -37,6 +38,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+        return new LoginSuccessHandler();
+    }
+
+    @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
@@ -57,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/userPage").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')");
 
         // For ADMIN only.
-        http.authorizeRequests().antMatchers("/admin").access("hasRole('ROLE_ADMIN')");
+        http.authorizeRequests().antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')");
 
         // When the user has logged in as XX.
         // But access a page that requires role YY,
@@ -69,7 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // Submit URL of login page.
                 .loginProcessingUrl("/j_spring_security_check") // Submit URL
                 .loginPage("/login")//
-                .defaultSuccessUrl("/userAccountInfo")//
+                .successHandler(new LoginSuccessHandler())
+                //.defaultSuccessUrl("/userPage")//
                 .failureUrl("/login?error=true")//
                 .usernameParameter("username")//
                 .passwordParameter("password")
@@ -77,33 +84,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/home");
 
     }
-
-
-/*        http.formLogin()
-                .loginPage("/login")// указываем страницу с формой логина
-                .successHandler(new LoginSuccessHandler())//указываем логику обработки при логине
-                .loginProcessingUrl("/login") // указываем action с формы логина
-                .usernameParameter("j_username")// Указываем параметры логина и пароля с формы логина
-                .passwordParameter("j_password")
-                .permitAll(); // даем доступ к форме логина всем
-
-        http.logout()
-                .permitAll()// разрешаем делать логаут всем
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))// указываем URL логаута
-                .logoutSuccessUrl("/login?logout")  // указываем URL при удачном логауте
-                .and().csrf().disable(); //выклчаем кроссдоменную секьюрность (на этапе обучения неважна)
-
-        http
-                .authorizeRequests()// делаем страницу регистрации недоступной для авторизированных пользователей
-                .antMatchers("/login").anonymous() //страницы аутентификаци доступна всемc
-                .antMatchers("/register").anonymous()
-                .antMatchers("/hello").access("hasAnyRole('ADMIN')").anyRequest().authenticated();  // защищенные URL
-    }
-*/
-
-/*    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }*/
-
 }

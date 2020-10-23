@@ -2,38 +2,130 @@ package web.Controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.*;
+import web.Model.User;
+import web.Service.RoleService;
 import web.Service.UserService;
+import web.Validator.UserValidator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class AdminController {
+
     @Autowired
     private UserService userService;
 
-    @GetMapping("/admin")
+    @Autowired
+    private UserValidator userValidator;
+
+    @Autowired
+    private RoleService roleService;
+
+    @GetMapping("/admin/userList")
     public String userList(Model model) {
-        model.addAttribute("allUsers", userService.listUsers());
-        return "admin";
+        List<User> usersList = new ArrayList<>();
+        usersList = userService.listUsers();
+        model.addAttribute("usersList", usersList);
+        return "/admin/userList";
     }
 
-    @PostMapping("/admin")
-    public String  deleteUser(@RequestParam(required = true, defaultValue = "" ) Long userId,
-                              @RequestParam(required = true, defaultValue = "" ) String action,
-                              Model model) {
-        if (action.equals("delete")){
-            userService.removeUser(userId);
+    @GetMapping("/admin/addNewUserForm")
+    public String showSignUpForm(Model model) {
+        model.addAttribute("user", new User());
+        return "admin/new";
+    }
+
+    @PostMapping("/admin/create")
+    public String create(@ModelAttribute("user") User userForm, BindingResult bindingResult, Model model) {
+        userValidator.validate(userForm, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "/admin/new";
         }
-        return "redirect:/admin";
+        userService.add(userForm);
+        roleService.checkIfRoleExistOraddNewRole("ROLE_USER");
+        return "redirect:/admin/userList";
     }
 
-    @GetMapping("/admin/gt/{userId}")
-    public String  gtUser(@PathVariable("userId") Long userId, Model model) {
-        model.addAttribute("allUsers", userService.findUserById(userId));
-        return "admin";
+
+    @GetMapping("admin/edit/{id}")
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("user", userService.findUserById(id));
+        model.addAttribute("password", userService.findUserById(id).getPassword());
+        return "admin/updateForm";
+    }
+
+    @PostMapping("/admin/update/{id}")
+    public String update(@PathVariable("id") Long id,
+                         @ModelAttribute("user") User userForm,
+                         BindingResult bindingResult,
+                         Model model) {
+        Validator editValidator = new Validator() {
+            @Override
+            public boolean supports(Class<?> aClass) {
+                return User.class.equals(aClass);
+            }
+
+            @Override
+            public void validate(Object o, Errors errors) {
+                User user = (User) o;
+
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "NotEmpty.appUserForm.username");
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "NotEmpty.appUserForm.firstName");
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "NotEmpty.appUserForm.lastName");
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.appUserForm.email");
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.appUserForm.password");
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "NotEmpty.appUserForm.confirmPassword");
+
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "Required");
+                if (user.getUsername().length() < 4 || user.getUsername().length() > 16) {
+                    errors.rejectValue("username", "Size.userForm.username");
+                }
+
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "Required");
+                if (user.getPassword().length() < 8 || user.getPassword().length() > 16) {
+                    errors.rejectValue("password", "Size.userForm.password");
+                }
+
+                if (!user.getConfirmPassword().equals(user.getPassword())) {
+                    errors.rejectValue("confirmPassword", "Different.userForm.password");
+                }
+
+                if (userService.loadUserByUsername(user.getUsername()) != null) {
+                    errors.rejectValue("username", "Duplicate.userForm.username");
+                }
+            }
+        };
+
+        editValidator.validate(userForm, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "/admin/updateForm";
+        }
+        userService.updateUser(userForm);
+        return "redirect:/admin/userList";
+    }
+
+
+    @GetMapping("/admin/deleteConfirm/{id}")
+    public String deleteConfirm(@PathVariable("id") Long id, Model model) {
+        User user = userService.findUserById(id);
+        model.addAttribute("user", userService.findUserById(id));
+        return "/admin/deleteConfirm";
+    }
+
+    @GetMapping("/admin/delete/{id}")
+    public String deleteUserById(@PathVariable(value = "id", required = true) long id, Model model) {
+        userService.removeUser(id);
+        return "redirect:/admin/userList";
     }
 }

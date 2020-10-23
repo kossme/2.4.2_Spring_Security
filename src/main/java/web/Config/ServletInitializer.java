@@ -26,23 +26,5 @@ public class ServletInitializer extends AbstractAnnotationConfigDispatcherServle
         return new String[]{"/"};
     }
 
-/*    @Override
-    protected Filter[] getServletFilters() {
-        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-        characterEncodingFilter.setEncoding("UTF-8");
-        characterEncodingFilter.setForceEncoding(true);
-        return new Filter[] {characterEncodingFilter};
-    }*/
-
-
-/*
-    @Override
-    protected javax.servlet.Filter[]getServletFilters() {
-        DelegatingFilterProxy delegateFilterProxy = new DelegatingFilterProxy();
-        delegateFilterProxy.setTargetBeanName("applicationFilter");
-        return new Filter[]{delegateFilterProxy};
-    }
-*/
-
 }
 

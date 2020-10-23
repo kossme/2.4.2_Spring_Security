@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <title th:utext="${title}"></title>
+    <title>Add new user</title>
     <style>
         th, td {
             padding: 5px;
@@ -18,17 +18,15 @@
     </style>
 </head>
 <body>
-<!-- Include _menu.html -->
-<!--
-<th:block th:include="/_menu"></th:block>
--->
 
-<h2>Register</h2>
+<th:block th:include="/_menu"></th:block>
+
+<h2>Add new user</h2>
 
 <div th:if="${errorMessage != null}"
      th:utext="${errorMessage}" class="error">...</div>
 
-<form th:action="@{/register}" th:object="${user}" method="POST">
+<form th:action="@{/admin/create}" th:object="${user}" method="POST">
     <table>
         <tr>
             <td>User Name</td>
@@ -81,7 +79,7 @@
             <td>&nbsp;</td>
             <td>
                 <input type="submit" value="Submit" />
-                <a th:href="@{/}">Cancel</a>
+                <a th:href="@{/admin/userList}">Cancel</a>
             </td>
             <td>&nbsp;</td>
         </tr>
@@ -89,5 +87,44 @@
 </form>
 
 </body>
-
 </html>
+<!--
+
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>New User</title>
+</head>
+<body>
+
+<h1>Adding new User</h1>
+
+<form th:method = post th:action="@{/}">
+
+    <label for="firstName">First Name</label>
+    <input type="text" th:field="*{user.firstName}" id="firstName">
+
+    <br/>
+
+    <label for="lastName">Last Name</label>
+    <input type="text" th:field="*{user.lastName}" id="lastName">
+
+    <br/>
+
+    <label for="email">Email</label>
+    <input type="text" th:field="*{user.email}" id="email">
+
+    <br/>
+
+    <input type="submit" value="Create!">
+
+</form>
+
+<h3>
+    <a th:href="@{/}">Back</a>
+</h3>
+
+</body>
+</html>-->

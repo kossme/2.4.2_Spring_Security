@@ -5,6 +5,8 @@
     <title>UsersList</title>
 </head>
 <body>
+<th:block th:include="/_menu">Menu</th:block>
+<h1>This is admins page</h1>
 <h1>Here is actual all Users data:</h1>
 
 <table>
@@ -22,16 +24,16 @@
         <td th:text="${user.lastName}"></td>
         <td th:text="${user.email}"></td>
             <td>
-                <a href="" th:href="@{'/edit/' + ${user.id}}">Edit</a>
+                <a href="" th:href="@{'/admin/edit/' + ${user.id}}">Edit</a>
             </td>
             <td>
-                <a href="" th:href="@{'/deleteConfirm/' + ${user.id}}">Delete</a>
+                <a href="" th:href="@{'/admin/deleteConfirm/' + ${user.id}}">Delete</a>
             </td>
         </tr>
 </table>
 
 <h2>
-    <a th:href="@{addNewUserForm}">Add new User</a>
+    <a th:href="@{/admin/addNewUserForm}">Add new User</a>
 </h2>
 
 </body>
