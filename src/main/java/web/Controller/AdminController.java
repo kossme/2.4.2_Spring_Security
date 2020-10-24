@@ -32,6 +32,9 @@ public class AdminController {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @GetMapping("/admin/userList")
     public String userList(Model model) {
         List<User> usersList = new ArrayList<>();
@@ -84,34 +87,49 @@ public class AdminController {
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "NotEmpty.appUserForm.firstName");
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "NotEmpty.appUserForm.lastName");
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.appUserForm.email");
-                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.appUserForm.password");
-                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "NotEmpty.appUserForm.confirmPassword");
 
-                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "Required");
-                if (user.getUsername().length() < 4 || user.getUsername().length() > 16) {
-                    errors.rejectValue("username", "Size.userForm.username");
+
+
+                if((!userForm.getPassword().equals("")) && (!userForm.getConfirmPassword().equals(""))) {
+                    if (userForm.getPassword().length() < 8 || userForm.getPassword().length() > 16) {
+                        errors.rejectValue("password", "Size.userForm.password");
+                    }
+                    if (!userForm.getConfirmPassword().equals(userForm.getPassword())) {
+                        errors.rejectValue("confirmPassword", "Different.userForm.password");
+                    }
                 }
 
-                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "Required");
-                if (user.getPassword().length() < 8 || user.getPassword().length() > 16) {
-                    errors.rejectValue("password", "Size.userForm.password");
-                }
-
-                if (!user.getConfirmPassword().equals(user.getPassword())) {
-                    errors.rejectValue("confirmPassword", "Different.userForm.password");
-                }
-
-                if (userService.loadUserByUsername(user.getUsername()) != null) {
-                    errors.rejectValue("username", "Duplicate.userForm.username");
+                if (!userForm.getUsername().equals(userService.findUserById(id).getUsername())) {
+                    if (userService.loadUserByUsername(user.getUsername()) != null) {
+                        errors.rejectValue("username", "Duplicate.userForm.username");
+                    }
+                    if (user.getUsername().length() < 4 || user.getUsername().length() > 16) {
+                        errors.rejectValue("username", "Size.userForm.username");
+                    }
                 }
             }
         };
+
+//$2a$10$rGyUFCopG0og/G5.FUCBG.feq/FXsXrOp7ubzvhF7nGYm/HMIxVZC
 
         editValidator.validate(userForm, bindingResult);
         if (bindingResult.hasErrors()) {
             return "/admin/updateForm";
         }
+        System.out.println(userForm.getPassword());
+        System.out.println(userForm.getConfirmPassword());
+
+        if(userForm.getPassword().equals("")) {
+            userForm.setPassword(userService.findUserById(id).getPassword());
+        } else {
+            userForm.setPassword(bCryptPasswordEncoder.encode(userForm.getPassword()));
+        }
+
+        System.out.println(userForm.getPassword());
+        System.out.println(userForm.getConfirmPassword());
+
         userService.updateUser(userForm);
+        System.out.println(userService.findUserById(id).getPassword());
         return "redirect:/admin/userList";
     }
 

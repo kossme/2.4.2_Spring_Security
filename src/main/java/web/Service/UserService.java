@@ -69,6 +69,7 @@ public class UserService implements UserDetailsService {
 
     public void updateUser(User user) {
         userDao.updateUser(user);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
     }
 
 
