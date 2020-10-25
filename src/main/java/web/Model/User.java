@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -31,15 +32,11 @@ public class User implements UserDetails {
     @Transient
     private String confirmPassword;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER/*, cascade = CascadeType.DETACH*/)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-
     @Column
     private Set<Role> roles;
-
-    @Version
-    private final int version = 0;
 
     public User(String firstName, String lastName, String email, String username, String password, String confirmPassword) {
         this.firstName = firstName;
@@ -52,6 +49,15 @@ public class User implements UserDetails {
 
     public User() {
     }
+
+    public User(String firstName, String lastName, String email, String username, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
 
     public void setUsername(String username) {
         this.username = username;

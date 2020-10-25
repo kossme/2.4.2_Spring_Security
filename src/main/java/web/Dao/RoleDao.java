@@ -10,4 +10,10 @@ public interface RoleDao {
     void checkIfRoleExistOraddNewRole(String roleName);
 
     List<Role> listAllRoles();
+
+    Role getRoleById(Long id);
+
+    Role getRoleByName(String name);
+
+
 }

@@ -2,8 +2,6 @@ package web.Controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +16,9 @@ import web.Service.RoleService;
 import web.Service.UserService;
 import web.Validator.UserValidator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 public class AdminController {
@@ -47,22 +46,24 @@ public class AdminController {
 
     @GetMapping("/admin/addNewUserForm")
     public String showSignUpForm(Model model) {
-        System.out.println(roleService.listAllRoles());
         model.addAttribute("user", new User());
         model.addAttribute("allRoles", roleService.listAllRoles());
         return "admin/new";
     }
 
     @PostMapping("/admin/create")
-    public String create(@ModelAttribute("user") User userForm, BindingResult bindingResult, Model model) {
+    public String create(@ModelAttribute("user") User userForm,
+                         BindingResult bindingResult,
+                         Model model) {
+
         userValidator.validate(userForm, bindingResult);
         if (bindingResult.hasErrors()) {
+            model.addAttribute("allRoles", roleService.listAllRoles());
             return "/admin/new";
         }
-        userService.add(userForm);
+        userService.save(userForm);
         return "redirect:/admin/userList";
     }
-
 
     @GetMapping("admin/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
@@ -124,7 +125,6 @@ public class AdminController {
         }
 
         userService.updateUser(userForm);
-        System.out.println(userService.findUserById(id).getPassword());
         return "redirect:/admin/userList";
     }
 

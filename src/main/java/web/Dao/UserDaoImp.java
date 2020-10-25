@@ -24,13 +24,7 @@ public class UserDaoImp implements UserDao  {
     }
 
     @Override
-    public void createUsersTable() {
-        System.out.println("creating users table");
-        entityManager.createNativeQuery("create table if not exist users(ID BIGINT PRIMARY KEY AUTO_INCREMENT, firstname VARCHAR(30), lastName VARCHAR(30), email varchar(30))");
-    }
-
-    @Override
-    public void add(User user) {
+    public void save(User user) {
         entityManager.persist(user);
     }
 
@@ -56,11 +50,6 @@ public class UserDaoImp implements UserDao  {
     @Override
     public User findUserById(long id) {
         return entityManager.find(User.class, id);
-    }
-
-    @Override
-    public void clearUsersTable() {
-
     }
 
     public User findByUsername(String username) {

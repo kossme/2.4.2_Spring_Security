@@ -1,18 +1,12 @@
 package web.Controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-import web.Dao.RoleDao;
 import web.Model.User;
 import web.Service.RoleService;
 import web.Service.UserService;
@@ -46,9 +40,8 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "/register";
         }
-        userService.add(userForm);
         roleService.checkIfRoleExistOraddNewRole("ROLE_USER");
-        //securityService.autoLogin(userForm.getUsername(), userForm.getConfirmPassword());
+        userService.save(userForm);
         return "redirect:/";
     }
 

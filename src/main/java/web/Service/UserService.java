@@ -1,17 +1,13 @@
 package web.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,15 +24,31 @@ import web.Model.User;
 public class UserService implements UserDetailsService {
 
     @Autowired
+    RoleService roleService;
+
+    @Autowired
     UserDao userDao;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void add(User user) {
-        //user.setRoles(Collections.singleton(new Role(1L, "ROLE_USER")));
+    public void save(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userDao.add(user);
+        System.out.println(user.getRoles());
+        Set<Role> roles = user.getRoles();
+        if(user.getRoles()==null) {
+            user.setRoles(Collections.singleton(roleService.getRoleByName("ROLE_USER")));
+        }
+        for(Role e : user.getRoles()) {
+            if(e.getName().equals("ROLE_USER")) {
+                e.setId(1L);
+            }
+            if(e.getName().equals("ROLE_ADMIN")) {
+                e.setId(2L);
+            }
+        }
+        System.out.println(user.getRoles());
+        userDao.save(user);
     }
 
     @Override
@@ -54,17 +66,12 @@ public class UserService implements UserDetailsService {
         return userDao.listUsers();
     }
 
-    public void createUsersTable() {
-        userDao.createUsersTable();
-    }
-
     public void removeUser(long id) {
         userDao.removeUser(id);
     }
 
     public void updateUser(User user) {
         userDao.updateUser(user);
-        //user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
     }
 
 
