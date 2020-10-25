@@ -31,11 +31,15 @@ public class User implements UserDetails {
     @Transient
     private String confirmPassword;
 
-    /*    @ManyToMany(fetch = FetchType.EAGER)*/
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.MERGE)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+
+    @Column
     private Set<Role> roles;
+
+    @Version
+    private final int version = 0;
 
     public User(String firstName, String lastName, String email, String username, String password, String confirmPassword) {
         this.firstName = firstName;

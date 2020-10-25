@@ -14,11 +14,14 @@ public class Role implements GrantedAuthority {
     @Column
     private Long id;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Transient
     private Set<User> users;
+
+    @Version
+    private final int version = 0;
 
     public Role() {
     }

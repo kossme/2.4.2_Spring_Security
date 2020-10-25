@@ -6,7 +6,9 @@ import web.Model.Role;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public class RoleDaoImpl implements RoleDao{
@@ -24,4 +26,14 @@ public class RoleDaoImpl implements RoleDao{
             entityManager.persist(new Role(roleName));
         }
     }
+
+    @Override
+    public List<Role> listAllRoles() {
+        TypedQuery<Role> query =
+                entityManager.createQuery("SELECT e FROM Role e", Role.class);
+        List<Role> results = query.getResultList();
+        return results;
+    }
+
+
 }

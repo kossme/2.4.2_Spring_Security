@@ -12,6 +12,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
+import web.Model.Role;
 import web.Model.User;
 import web.Service.RoleService;
 import web.Service.UserService;
@@ -37,15 +38,18 @@ public class AdminController {
 
     @GetMapping("/admin/userList")
     public String userList(Model model) {
-        List<User> usersList = new ArrayList<>();
-        usersList = userService.listUsers();
-        model.addAttribute("usersList", usersList);
+        System.out.println("roleService.listAllRoles()");
+
+
+        model.addAttribute("usersList", userService.listUsers());
         return "/admin/userList";
     }
 
     @GetMapping("/admin/addNewUserForm")
     public String showSignUpForm(Model model) {
+        System.out.println(roleService.listAllRoles());
         model.addAttribute("user", new User());
+        model.addAttribute("allRoles", roleService.listAllRoles());
         return "admin/new";
     }
 
@@ -56,7 +60,6 @@ public class AdminController {
             return "/admin/new";
         }
         userService.add(userForm);
-        roleService.checkIfRoleExistOraddNewRole("ROLE_USER");
         return "redirect:/admin/userList";
     }
 
@@ -64,7 +67,7 @@ public class AdminController {
     @GetMapping("admin/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         model.addAttribute("user", userService.findUserById(id));
-        model.addAttribute("password", userService.findUserById(id).getPassword());
+        model.addAttribute("allRoles", roleService.listAllRoles());
         return "admin/updateForm";
     }
 
@@ -82,13 +85,10 @@ public class AdminController {
             @Override
             public void validate(Object o, Errors errors) {
                 User user = (User) o;
-
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "NotEmpty.appUserForm.username");
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "NotEmpty.appUserForm.firstName");
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "NotEmpty.appUserForm.lastName");
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.appUserForm.email");
-
-
 
                 if((!userForm.getPassword().equals("")) && (!userForm.getConfirmPassword().equals(""))) {
                     if (userForm.getPassword().length() < 8 || userForm.getPassword().length() > 16) {
@@ -110,8 +110,6 @@ public class AdminController {
             }
         };
 
-//$2a$10$rGyUFCopG0og/G5.FUCBG.feq/FXsXrOp7ubzvhF7nGYm/HMIxVZC
-
         editValidator.validate(userForm, bindingResult);
         if (bindingResult.hasErrors()) {
             return "/admin/updateForm";
@@ -124,9 +122,6 @@ public class AdminController {
         } else {
             userForm.setPassword(bCryptPasswordEncoder.encode(userForm.getPassword()));
         }
-
-        System.out.println(userForm.getPassword());
-        System.out.println(userForm.getConfirmPassword());
 
         userService.updateUser(userForm);
         System.out.println(userService.findUserById(id).getPassword());

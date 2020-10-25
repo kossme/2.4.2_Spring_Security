@@ -33,15 +33,10 @@ public class UserService implements UserDetailsService {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public boolean add(User user) {
-        User userfromDB = userDao.findByUsername(user.getUsername());
-        if (userfromDB != null) {
-            return false;
-        }
-        user.setRoles(Collections.singleton(new Role(1L, "ROLE_USER")));
+    public void add(User user) {
+        //user.setRoles(Collections.singleton(new Role(1L, "ROLE_USER")));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userDao.add(user);
-        return true;
     }
 
     @Override
@@ -69,7 +64,7 @@ public class UserService implements UserDetailsService {
 
     public void updateUser(User user) {
         userDao.updateUser(user);
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        //user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
     }
 
 
