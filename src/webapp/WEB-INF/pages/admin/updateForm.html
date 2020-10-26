@@ -87,24 +87,56 @@
         </tr>
         <td>Roles</td>
         <td>
-            <input type="checkbox" name="roles"
-                   th:each="role : ${allRoles}"
-                   th:text="${role.name}"
-                   th:value="${role.id}"
-                   th:field="*{roles}"
-            />
+            <label>
+                <input type="checkbox"  name="ROLE_ADMIN"  th:checked="${confirmAdmin}" th:text="ROLE_ADMIN" />
+            </label>
+            <label>
+                <input type="checkbox" name="ROLE_USER"  th:checked="${confirmUser}" th:text="ROLE_USER" />
+            </label>
+
         </td>
-        <tr>
-            <td>&nbsp;</td>
-            <td>
-                <input type="submit" value="Submit"/>
-                <a th:href="@{/admin/userList}">Cancel</a>
-            </td>
-            <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>
+            <input type="submit" value="Submit"/>
+            <a th:href="@{/admin/userList}">Cancel</a>
+        </td>
+        <td>&nbsp;</td>
         </tr>
     </table>
 </form>
+<!--
+<form th:action="@{'/admin/edit/' + ${user.id}}" th:object="${allRoles}" method="POST">
+    <table>
+        <tr th:each="roles : ${allRoles}">
+            <td th:text="${roles.name}"></td>
+            <td>
+                <a href="" th:href="@{'/admin/edit/' + ${user.id}}">Edit</a>
+            </td>
+            <td>
+                <a href="" th:href="@{'/admin/deleteConfirm/' + ${user.id}}">Delete</a>
+            </td>
+            <td th:text="${user.password}"></td>
+        </tr>
+        <tr>
+            <td>User Name</td>
 
+            <td>
+                <label for="username"></label>
+                <input type="text" th:field="*{username}" id="username">
+            </td>
+
+            <td>
+                <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}">..</span>
+            </td>
+        </tr>
+    <td>
+        <input type="checkbox" name="roles"
+               th:each="role : ${allRoles}"
+               th:text="${role.name}"
+               th:value="${role.id}"
+               th:field="*{roles}"
+        />
+    </td>-->
 </body>
 
 </html>

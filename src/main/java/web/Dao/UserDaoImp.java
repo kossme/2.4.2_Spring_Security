@@ -1,6 +1,7 @@
 
 package web.Dao;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Repository;
 import web.Model.User;
@@ -38,13 +39,8 @@ public class UserDaoImp implements UserDao  {
 
     @Override
     public void updateUser(User user){
-        String sqlQuery = "update users set firstName= '" +  user.getFirstName() +
-                "', lastName= '" + user.getLastName() +
-                "',  email= '" + user.getEmail() +
-                "',  username= '" + user.getUsername() +
-                "',  password= '" + user.getPassword() +
-                "' where id=" +user.getId();
-        entityManager.createNativeQuery(sqlQuery).executeUpdate();
+        Session session = entityManager.unwrap(Session.class);
+        session.update(user);
     }
 
     @Override

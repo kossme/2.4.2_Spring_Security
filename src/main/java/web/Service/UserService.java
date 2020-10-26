@@ -34,7 +34,6 @@ public class UserService implements UserDetailsService {
 
     public void save(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        System.out.println(user.getRoles());
         Set<Role> roles = user.getRoles();
         if(user.getRoles()==null) {
             user.setRoles(Collections.singleton(roleService.getRoleByName("ROLE_USER")));
@@ -47,7 +46,6 @@ public class UserService implements UserDetailsService {
                 e.setId(2L);
             }
         }
-        System.out.println(user.getRoles());
         userDao.save(user);
     }
 

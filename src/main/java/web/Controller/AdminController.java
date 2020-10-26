@@ -2,6 +2,8 @@ package web.Controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -69,14 +71,29 @@ public class AdminController {
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         model.addAttribute("user", userService.findUserById(id));
         model.addAttribute("allRoles", roleService.listAllRoles());
+
+        boolean isAdmin = false;
+        boolean isUser = false;
+        if (userService.findUserById(id).getRoles().stream().anyMatch(a -> a.toString().contains("ROLE_ADMIN"))) {
+            isAdmin = true;
+        }
+        model.addAttribute("confirmAdmin", isAdmin);
+        if (userService.findUserById(id).getRoles().stream().anyMatch(a -> a.toString().contains("ROLE_USER"))) {
+            isUser = true;
+        }
+
+        model.addAttribute("confirmUser", isUser);
         return "admin/updateForm";
     }
 
     @PostMapping("/admin/update/{id}")
     public String update(@PathVariable("id") Long id,
                          @ModelAttribute("user") User userForm,
+                         @RequestParam(name = "ROLE_ADMIN", required = false) boolean confirmAdmin,
+                         @RequestParam(name = "ROLE_USER", required = false) boolean confirmUser,
                          BindingResult bindingResult,
                          Model model) {
+
         Validator editValidator = new Validator() {
             @Override
             public boolean supports(Class<?> aClass) {
@@ -115,14 +132,29 @@ public class AdminController {
         if (bindingResult.hasErrors()) {
             return "/admin/updateForm";
         }
-        System.out.println(userForm.getPassword());
-        System.out.println(userForm.getConfirmPassword());
 
+        //Checking if password was changed
         if(userForm.getPassword().equals("")) {
             userForm.setPassword(userService.findUserById(id).getPassword());
         } else {
             userForm.setPassword(bCryptPasswordEncoder.encode(userForm.getPassword()));
         }
+
+        //Cgecking Roles
+        User userRole = new User();
+        Set<Role> newroles = new HashSet<>();
+
+        if (confirmAdmin) {
+            newroles.add(roleService.getRoleByName("ROLE_ADMIN"));
+        }
+        if (confirmUser) {
+            newroles.add(roleService.getRoleByName("ROLE_USER"));
+        }
+
+        userRole.setRoles(newroles);
+
+        //updating user's roles
+        userForm.setRoles(userRole.getRoles());
 
         userService.updateUser(userForm);
         return "redirect:/admin/userList";
